@@ -1,3 +1,6 @@
+from wsgiref import validate
+
+from django.core.validators import validate_domain_name
 from rest_framework import serializers
 from .models import Genre, Director, Actor, Movie
 
@@ -32,12 +35,20 @@ class MovieUserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         genre_write = validated_data.pop('genre_write')
+        director_write = validated_data.pop('director_write')
+        actor_write = validated_data.pop('actor_write')
         movie = Movie.objects.create(genre=genre_write, **validated_data)
+        director = Director.objects.create(director=director_write, **validated_data)
+        actor = Actor.objects.create(actor=actor_write, **validated_data)
         movie.save()
-        return movie
+        director.save()
+        actor.save()
+        return movie, director, actor
 
     def update(self, instance, validated_data):
         instance.genre = validated_data.pop('genre') or instance.genre
+        instance.director = validated_data.pop('director') or instance.director
+        instance.actor = validated_data.pop('actor') or instance.actor
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
