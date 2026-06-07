@@ -2,7 +2,7 @@ from wsgiref import validate
 
 from django.core.validators import validate_domain_name
 from rest_framework import serializers
-from .models import Genre, Director, Actor, Movie
+from .models import Genre, Director, Actor, Movie, Comment
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -64,3 +64,10 @@ class MovieAdminSerializer(serializers.ModelSerializer):
         model = Movie
         fields = ['id', 'title', 'year', 'description', 'photo', 'genres', 'directors', 'actors', 'genre_write', 'director_write', 'actor_write']
         depth = 1
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['text']
+        read_only_fields = ('text',)
