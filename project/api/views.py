@@ -5,13 +5,11 @@ from rest_framework.permissions import DjangoModelPermissions, DjangoModelPermis
 
 from .models import *
 from .serializers import *
-from .permissions import *
 
 
 class GenreListAPIView(ListCreateAPIView):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [MyIsAuthenticatedOrReadOnly]
 
 
 class GenreRetrieveAPIView(RetrieveUpdateDestroyAPIView):
@@ -54,17 +52,6 @@ class MovieListCreateAPIView(ListCreateAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieAdminSerializer
     permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
-
-    def get_queryset(self):
-        genre_id = self.kwargs.get('genre_id')
-        if genre_id:
-            return self.queryset.filter(genre_id=genre_id)
-        return self.queryset
-
-    def get_serializer_class(self):
-        if self.request.user.is_staff:
-            return MovieAdminSerializer
-        return MovieUserSerializer
 
 
 class MovieRetrieveAPIView(RetrieveUpdateDestroyAPIView):
