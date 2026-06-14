@@ -1,25 +1,24 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
-from .views import MovieListCreateAPIView, DirectorListCreateAPIView, ActorListCreateAPIView, \
-    MovieRetrieveAPIView, DirectorRetrieveAPIView, ActorRetrieveAPIView, GenreListAPIView, GenreRetrieveAPIView, \
-    CommentListApiView, CommentRetrieveAPIView
+from .views import *
+
+router = DefaultRouter()
+router.register('movies', MovieAPIViewSet)
+router.register('directors', DirectorAPIViewSet)
+router.register('actors', ActorAPIViewSet)
+router.register('genres', GenreAPIViewSet)
+
 
 urlpatterns = [
-    path('movies/', MovieListCreateAPIView.as_view()),
-    path('movies/<int:pk>/', MovieRetrieveAPIView.as_view(), name='movie-detail'),
-    path('movies/genres/<int:pk>/', MovieListCreateAPIView.as_view()),
-
-    path('directors/', DirectorListCreateAPIView.as_view()),
-    path('directors/<int:pk>/', DirectorRetrieveAPIView.as_view(), name='director-detail'),
-
-    path('actors/', ActorListCreateAPIView.as_view()),
-    path('actors/<int:pk>/', ActorRetrieveAPIView.as_view(), name='actor-detail'),
-
-    path('genres/', GenreListAPIView.as_view()),
-    path('genres/<int:pk>/', GenreRetrieveAPIView.as_view(), name='genre-detail'),
-
-    path('movies/', CommentListApiView.as_view()),
-    path('movies/<int:pk>/', CommentRetrieveAPIView.as_view()),
-    path('movies/<int:pk>/comments/', CommentListApiView.as_view()),
-path('movies/<int:pk>/comments/<int:comment_id>/', CommentRetrieveAPIView.as_view()),
+    path(
+        'movies/<int:pk>/comments',
+        CommentViewSet.as_view({'get': 'list', 'post': 'create'}),
+        name='comment_list'),
+    path(
+        'movies/<int:movie_pk>/comments/<int:pk>/',
+         CommentViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'}),
+         name='comment_detail'),
+        
+    path('', include(router.urls))
 ]
